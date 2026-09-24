@@ -192,6 +192,20 @@ $env:OPENAI_EMBEDDING_DEPLOYMENT = "text-embedding-3-small"
 # $env:OPENAI_EMBEDDING_DEPLOYMENT = "text-embedding-3-small"
 ```
 
+### Private Cosmos via Azure Bastion SOCKS5
+
+When the account is only reachable through Bastion SOCKS (`socks5://127.0.0.1:<port>`), Direct mode will fail. Set a SOCKS proxy so the Toolkit uses **Gateway** and dials `*.documents.azure.com:443` through SOCKS (TLS still terminates on Cosmos):
+
+```powershell
+$env:COSMOS_ENDPOINT = "https://myaccount.documents.azure.com:443/"
+$env:COSMOS_SOCKS5_PROXY = "socks5://127.0.0.1:51080"   # Bastion tunnel local port
+# Optional explicit mode (SOCKS already forces Gateway):
+# $env:COSMOS_CONNECTION_MODE = "Gateway"
+$env:DEV_BYPASS_AUTH = "true"
+```
+
+`ALL_PROXY=socks5://…` is also honored when `COSMOS_SOCKS5_PROXY` is unset. `COSMOS_CONNECTION_MODE=Direct` with a SOCKS proxy fails closed.
+
 ## Using Cosmos DB Emulator
 
 The MCP Toolkit now supports local development with the Cosmos DB emulator via connection strings, so you don't need Azure credentials for local testing.
